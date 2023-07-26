@@ -1,10 +1,10 @@
 """Module containing the implementation for the websocket to follow SansIOProtocol"""
-import asyncio
+from asyncio import Protocol
 
 from uvicorn.config import Config
 from uvicorn.server import ServerState
 
-class WebSocketSansIOProtocol(asyncio.Protocol):
+class WebSocketSansIOProtocol(Protocol):
     """_summary_
 
     Args:
@@ -14,3 +14,5 @@ class WebSocketSansIOProtocol(asyncio.Protocol):
         if not config.loaded:
             config.load()
         self.config = config
+        self.server_state = server_state
+        

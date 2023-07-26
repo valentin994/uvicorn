@@ -591,6 +591,16 @@ def run(
     if not server.started and not config.should_reload and config.workers == 1:
         sys.exit(STARTUP_FAILURE)
 
+async def app(scope, receive, send):
+    assert scope["type"] == "websocket"
+    while True:
+        event = await receive()
+        if event["type"] == "websocket.connect":
+            await send({"type": "websocket.accept"})
+        elif event["type"] == "websocket.receive":
+            await send({"type": "websocket.send", "text": event["text"]})
+        elif event["type"] == "websocket.disconnect":
+            break
 
 if __name__ == "__main__":
     main()  # pragma: no cover
