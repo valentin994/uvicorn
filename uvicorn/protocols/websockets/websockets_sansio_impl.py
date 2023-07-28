@@ -1,5 +1,5 @@
 """Module containing the implementation for the websocket to follow SansIOProtocol"""
-from asyncio import Protocol, AbstractEventLoop, get_event_loop, Transport, Queue, Event
+from asyncio import AbstractEventLoop, get_event_loop, Transport, Queue, Event
 from asyncio.transports import BaseTransport, Transport
 import logging
 from typing import Dict, Any, Optional, Tuple, cast, TYPE_CHECKING, Union
@@ -20,10 +20,10 @@ from uvicorn.logging import TRACE_LOG_LEVEL
 from uvicorn.server import ServerState
 from uvicorn.protocols.utils import get_local_addr, get_client_addr, get_path_with_query_string, get_remote_addr, is_ssl
 from websockets.extensions.permessage_deflate import ServerPerMessageDeflateFactory 
-from websockets.server import ServerConnection
+from websockets.server import ServerConnection, ServerProtocol
 
 
-class WebSocketSansIOProtocol(Protocol):
+class WebSocketSansIOProtocol(ServerProtocol):
     """_summary_
 
     Args:
@@ -59,8 +59,6 @@ class WebSocketSansIOProtocol(Protocol):
         self.queue: Queue["WebSocketEvent"] = Queue()
         self.handshake_complete = False
         self.close_sent = False
-        print(f"server state {server_state.__dict__}")
-        print(f"app state {app_state}")
 
         extensions = []
         if self.config.ws_per_message_deflate:
