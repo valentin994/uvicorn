@@ -88,13 +88,20 @@ class WebSocketSansIOProtocol(ServerProtocol):
         self.conn.receive_eof()
 
     def data_received(self, data: bytes) -> None:
-        # NOTE: Does receive_data raises any other exception?
-        self.conn.receive_data(data)
-        self.handle_events()
+        if data:
+            self.conn.receive_data(data)
+            # self.handle_events()
+        else:
+            self.conn.receive_eof()
+        print("DATA RECEIVED \n")
+        events = self.conn.events_received()
+        response = self.conn.accept(events[0])
+        self.conn.send_response(response)
+        for data in self.conn.data_to_send():
+            self.transport.write(data)
 
     def handle_events(self) -> None:
         for event in self.conn.events_received():
-            print(event)
             if isinstance(event, Request):
                 self.handle_connect(event)
 
